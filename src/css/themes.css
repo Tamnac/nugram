@@ -1,0 +1,194 @@
+body {
+	margin: 0;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+		'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+		'Helvetica Neue', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	color-scheme: light dark;
+
+	/* Color variables */
+	--back: light-dark(hsl(48, 11%, 93%), hsl(15, 11%, 7%));
+	--back-light: light-dark(#f3f3f3, rgb(37, 26, 30));
+	--text: light-dark(#1c1e21, hsl(216, 5%, 89%));
+	--accent1: #3f9204;
+	--quote: light-dark(hsl(120, 99%, 39%), hsl(120, 69%, 60%));
+	--italic: light-dark(hsl(211, 78%, 30%), rgb(80, 130, 220));
+	--link: light-dark(hsl(120, 55%, 28%), hsl(120, 50%, 60%));
+	--link-hover: light-dark(hsl(120, 65%, 22%), hsl(120, 70%, 72%));
+
+	/* Border radius spectrum */
+	--rad-sm: 4px;
+	--rad: 8px;
+	--rad-lg: 12px;
+
+	/* Font system */
+	--font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+	--font-message: "Bahnschrift", "PT Astra Serif", serif;
+	--font-monospace: 'Consolas', 'Monaco', 'Courier New', monospace;
+
+	/* Typography enhancements */
+	--line-height-normal: 1.4;
+	--line-height-relaxed: 1.5;
+	--letter-spacing: 0;
+	--weight-normal: 400;
+	--weight-medium: 500;
+	--weight-bold: 600;
+	--select-arrow: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%231c1e21' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
+
+	/* Borders & shadows */
+	--border-subtle: light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+	--shadow: light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15));
+	--button-border: none;
+	--button-select-border: none;
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		--select-arrow: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%23eceef2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
+	}
+
+	input[type="number"]::-webkit-inner-spin-button {
+		filter: invert(1);
+	}
+}
+
+/* Fantasy Theme - Warm, earthy, parchment-like */
+body[data-theme="fantasy"] {
+	--back: light-dark(hsl(45, 30%, 93%), hsl(30, 15%, 12%));
+	--back-light: light-dark(hsl(45, 25%, 97%), hsl(30, 20%, 14%));
+	--text: light-dark(hsl(30, 40%, 18%), hsl(30, 20%, 85%));
+	--accent1: light-dark(hsla(43, 94%, 49%), hsl(48, 85%, 55%));
+	--quote: light-dark(hsl(35, 80%, 40%), hsl(35, 70%, 65%));
+	--italic: light-dark(hsl(10, 60%, 32%), hsl(10, 50%, 70%));
+	--link: light-dark(hsl(35, 75%, 32%), hsl(40, 75%, 62%));
+	--link-hover: light-dark(hsl(35, 85%, 24%), hsl(40, 85%, 74%));
+	--border-subtle: light-dark(rgba(139, 69, 19, 0.2), rgba(210, 180, 140, 0.2));
+	--shadow: light-dark(rgba(101, 67, 33, 0.25), rgba(0, 0, 0, 0.4));
+
+	/* Rounded, organic borders */
+	--rad-sm: 6px;
+	--rad: 10px;
+	--rad-lg: 16px;
+
+	/* Clean UI font, decorative message font */
+	--font-ui: 'Cambria', 'Segoe UI', 'Roboto', system-ui, sans-serif;
+	--font-message: 'Fanwood Text', 'Georgia', 'Palatino', 'Book Antiqua', serif;
+
+	/* Relaxed reading */
+	--line-height-normal: 1.5;
+	--line-height-relaxed: 1.6;
+	--letter-spacing: 0.01em;
+
+	/* Larger font size for decorative Fanwood Text */
+	--font-size-message: 18px;
+}
+
+/* Sci-fi/Futuristic Theme - Cyberpunk terminal aesthetic */
+body[data-theme="scifi"] {
+	--back: light-dark(hsl(204 30% 98% / 1), hsl(312, 20%, 8%));
+	--back-light: light-dark(hsl(12, 25%, 98%), hsl(220, 20%, 11%));
+	--text: light-dark(hsl(12, 55%, 12%), hsl(180, 10%, 88%));
+	--accent1: light-dark(hsl(165, 100%, 28%), hsl(165, 100%, 45%));
+	--quote: light-dark(hsl(280, 85%, 45%), hsl(280, 80%, 70%));
+	--italic: light-dark(hsl(45, 100%, 40%), hsl(45, 100%, 60%));
+	--link: light-dark(hsl(165, 100%, 22%), hsl(165, 100%, 45%));
+	--link-hover: light-dark(hsl(165, 100%, 16%), hsl(165, 100%, 60%));
+	--border-subtle: light-dark(rgba(0, 143, 119, 0.25), rgba(0, 230, 191, 0.25));
+	--shadow: light-dark(rgba(0, 40, 60, 0.2), rgba(0, 0, 0, 0.5));
+
+	/* Sharp, geometric borders - hard edges for that technical feel */
+	--rad-sm: 0px;
+	--rad: 0px;
+	--rad-lg: 1px;
+	--button-border: 1px solid color-mix(in srgb, var(--accent1) 50%, transparent);
+	--button-select-border: 1px solid color-mix(in srgb, var(--accent1) 70%, transparent);
+
+	/* Clean technical fonts */
+	--font-ui: 'OCR A', 'Consolas', 'SF Mono', 'Monaco', monospace;
+	--font-message: 'Courier New', 'Segoe UI', 'Inter', 'Roboto', sans-serif;
+
+	/* Compact technical spacing */
+	--line-height-normal: 1.4;
+	--line-height-relaxed: 1.5;
+	--letter-spacing: 0em;
+}
+
+/* Literature Theme - Classic book-like */
+body[data-theme="literature"] {
+	--back: light-dark(hsl(48, 18%, 91%), hsl(30, 12%, 10%));
+	--back-light: light-dark(hsl(48, 12%, 95%), hsl(30, 15%, 13%));
+	--text: light-dark(hsl(30, 40%, 12%), hsl(30, 15%, 85%));
+	--accent1: light-dark(hsl(30, 85%, 32%), hsl(30, 55%, 65%));
+	--quote: light-dark(hsl(120, 75%, 26%), hsl(120, 65%, 65%));
+	--italic: light-dark(hsl(28, 55%, 28%), hsl(30, 45%, 72%));
+	--link: light-dark(hsl(30, 85%, 28%), hsl(30, 55%, 65%));
+	--link-hover: light-dark(hsl(30, 90%, 20%), hsl(30, 65%, 77%));
+	--border-subtle: light-dark(rgba(101, 67, 33, 0.25), rgba(180, 150, 120, 0.2));
+	--shadow: light-dark(rgba(90, 60, 30, 0.3), rgba(0, 0, 0, 0.4));
+
+	/* Classic book borders */
+	--rad-sm: 3px;
+	--rad: 6px;
+	--rad-lg: 10px;
+
+	/* Clean UI font, classic book font for messages */
+	--font-ui: 'Corbel', 'Roboto', system-ui, sans-serif;
+	--font-message: 'Georgia', 'Cambria', 'Times New Roman', serif;
+
+	/* Improved spacing for better readability */
+	--line-height-normal: 1.6;
+	--line-height-relaxed: 1.7;
+	--letter-spacing: 0.01em;
+
+	/* Slightly heavier font weights for better readability */
+	--weight-normal: 450;
+	--weight-medium: 550;
+	--weight-bold: 650;
+}
+
+/* Modern/Minimal Theme - Light, fresh, minimal */
+body[data-theme="modern"] {
+	--back: light-dark(hsl(120, 15%, 94%), hsl(120, 12%, 10%));
+	--back-light: light-dark(hsl(120, 10%, 97%), hsl(120, 5%, 14%));
+	--text: light-dark(hsl(120, 20%, 18%), hsl(120, 15%, 85%));
+	--accent1: light-dark(hsl(120, 50%, 40%), hsl(120, 40%, 40%));
+	--quote: light-dark(hsl(90, 55%, 40%), hsl(90, 65%, 65%));
+	--italic: light-dark(hsl(180, 40%, 35%), hsl(180, 60%, 60%));
+	--link: light-dark(hsl(120, 50%, 32%), hsl(120, 40%, 40%));
+	--link-hover: light-dark(hsl(120, 60%, 24%), hsl(120, 50%, 62%));
+	--border-subtle: light-dark(rgba(100, 120, 100, 0.1), rgba(140, 180, 140, 0.2));
+	--shadow: light-dark(rgba(80, 100, 80, 0.15), rgba(0, 0, 0, 0.4));
+
+	/* Soft, minimal borders */
+	--rad-sm: 5px;
+	--rad: 8px;
+	--rad-lg: 12px;
+	--button-border: none; /* 1px solid color-mix(in srgb, var(--accent1) 50%, transparent);*/
+	--button-select-border: 1px solid color-mix(in srgb, var(--accent1) 70%, transparent);
+
+	/* Clean sans-serif fonts */
+	--font-ui: 'system-ui', 'Segoe UI', 'Roboto', sans-serif;
+	--font-message: 'Bahnschrift Light', 'Source Sans Pro', 'system-ui', sans-serif;
+
+	/* Balanced spacing */
+	--line-height-normal: 1.45;
+	--line-height-relaxed: 1.55;
+	--letter-spacing: 0;
+}
+
+body[data-theme="fantasy"] ul {
+	list-style-type: '▸ ';
+}
+
+body[data-theme="scifi"] ul {
+	list-style-type: '▹ ';
+}
+
+body[data-theme="literature"] ul {
+	list-style-type: '• ';
+}
+
+body[data-theme="modern"] ul {
+	list-style-type: '◦ ';
+}

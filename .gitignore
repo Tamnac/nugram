@@ -1,0 +1,22 @@
+node_modules
+dist
+.env
+kimi.yml
+system.md
+agents.md
+
+# Tauri build artifacts
+src-tauri/target/
+src-tauri/icons
+story.db
+story.db-shm
+story.db-wal
+backups/
+scripts/reasoning_test_neuralwatt_vs_moonshot.ts
+mds/CONFIG_PLAN.md
+.codemapper*
+mds/TAURI_PLAN.md
+reame.md
+mds/perf.md
+mds/SUBAGENTS_PLAN.md
+mds/SEARCH_PLAN.md

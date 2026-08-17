@@ -1,0 +1,85 @@
+{
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "fs:default",
+    {
+      "identifier": "fs:allow-read-text-file",
+      "allow": [{ "path": "**" }]
+    },
+    {
+      "identifier": "fs:allow-read-file",
+      "allow": [{ "path": "**" }]
+    },
+    {
+      "identifier": "fs:allow-write-text-file",
+      "allow": [{ "path": "**" }]
+    },
+    {
+      "identifier": "fs:allow-exists",
+      "allow": [{ "path": "**" }]
+    },
+    {
+      "identifier": "fs:allow-stat",
+      "allow": [{ "path": "**" }]
+    },
+    {
+      "identifier": "fs:allow-mkdir",
+      "allow": [{ "path": "**" }]
+    },
+    {
+      "identifier": "fs:allow-read-dir",
+      "allow": [{ "path": "**" }]
+    },
+    {
+      "comment": "Database backups only — the three destructive fs commands stay off the general **",
+      "identifier": "fs:allow-copy-file",
+      "allow": [
+        { "path": "**/backups/story-*.db" },
+        { "path": "**/story.db.part" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-rename",
+      "allow": [
+        { "path": "**/backups/story-*.db" },
+        { "path": "**/backups/story-*.db.part" },
+        { "path": "**/story.db" },
+        { "path": "**/story.db.part" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-remove",
+      "allow": [
+        { "path": "**/backups/story-*.db" },
+        { "path": "**/backups/story-*.db.part" },
+        { "path": "**/backups/story-*.json" },
+        { "path": "**/story.db.part" },
+        { "path": "**/story.db-wal" },
+        { "path": "**/story.db-shm" }
+      ]
+    },
+    "dialog:default",
+    "dialog:allow-save",
+    "dialog:allow-open",
+    "dialog:allow-ask",
+    "http:default",
+    {
+      "identifier": "http:allow-fetch",
+      "allow": [
+        { "url": "https://**" },
+        { "url": "http://**" },
+        { "url": "http://127.0.0.1:**" },
+        { "url": "http://localhost:**" }
+      ]
+    },
+    "http:allow-fetch-send",
+    "sql:allow-load",
+    "sql:allow-execute",
+    "sql:allow-select",
+    "sql:allow-close",
+    "window-state:default"
+  ]
+}
