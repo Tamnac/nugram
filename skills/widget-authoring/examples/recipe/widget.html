@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Recipe card with adjustable servings and steps the user can check off. Args: title, servings (number the recipe makes, default 1), ingredients and steps (arrays, or one string with items separated by newlines or semicolons), notes (optional). Ingredients are strings like '200 g flour' or '1 1/2 cups milk' (a leading quantity or range is scaled) or objects {qty, unit, name}. Without args it shows a demo pancake recipe.">
+<style>
+	/* nugram's theme, with this widget's own palette as the fallback */
+	:root {
+		color-scheme: light dark;
+		--bg: var(--back, light-dark(#fffaf3, #1f1b17));
+		--card: var(--back-light, light-dark(#fff, #27221d));
+		--fg: var(--text, light-dark(#2b2620, #ece4d8));
+		--muted: color-mix(in srgb, var(--fg) 58%, transparent);
+		--accent: var(--accent1, light-dark(#c0602a, #e58a4e));
+		--line: var(--border-subtle, light-dark(#eadfcf, #3a332b));
+		--done: color-mix(in srgb, var(--fg) 45%, transparent);
+		--radius: var(--rad, 8px);
+		--radius-sm: var(--rad-sm, 6px);
+	}
+	html, body { height: 100%; margin: 0; }
+	body {
+		background: var(--bg); color: var(--fg); overflow: auto;
+		font: 14px/var(--line-height-normal, 1.45) var(--font-ui, system-ui, -apple-system, 'Segoe UI', sans-serif);
+	}
+	main { max-width: 760px; margin: 0 auto; padding: 16px 18px 24px; }
+
+	header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; }
+	h1 { font-size: 1.35em; margin: 0; }
+	h2 {
+		font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.08em;
+		color: var(--muted); margin: 18px 0 8px; display: flex; justify-content: space-between;
+	}
+
+	.servings { display: flex; align-items: center; gap: 6px; }
+	.servings label { color: var(--muted); margin-right: 2px; }
+	.servings input {
+		width: 3.2em; text-align: center; font: inherit; font-weight: 600;
+		background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 3px 2px;
+	}
+	.servings input::-webkit-inner-spin-button { display: none; }
+	button {
+		font: inherit; cursor: pointer; color: var(--fg); background: var(--card);
+		border: 1px solid var(--line); border-radius: var(--radius-sm); min-width: 28px; height: 28px;
+	}
+	button:hover { border-color: var(--accent); color: var(--accent); }
+	.factor { color: var(--muted); font-size: 0.85em; min-width: 3.5em; }
+
+	ul, ol { margin: 0; padding: 0; list-style: none; }
+	.ingredients {
+		display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0 18px;
+		background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 12px;
+	}
+	.ingredients li { padding: 4px 0; border-bottom: 1px dashed var(--line); }
+	.qty { font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+
+	.steps li {
+		display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; margin-bottom: 6px;
+		background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); cursor: pointer; user-select: none;
+	}
+	.steps li:hover, .steps li:focus-visible { border-color: var(--accent); outline: none; }
+	.num {
+		flex: none; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--accent);
+		display: grid; place-items: center; font-size: 0.75em; font-weight: 700; color: var(--accent);
+	}
+	.steps li.done { color: var(--done); }
+	.steps li.done .text { text-decoration: line-through; }
+	.steps li.done .num { background: var(--accent); color: var(--card); }
+	.progress { text-transform: none; letter-spacing: 0; }
+	.allDone { color: var(--accent); font-weight: 600; }
+
+	.notes { color: var(--muted); font-style: italic; margin: 14px 0 0; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<main>
+	<header>
+		<h1 id="title"></h1>
+		<div class="servings">
+			<label for="servings">Servings</label>
+			<button id="less" title="Fewer servings">&minus;</button>
+			<input id="servings" type="number" min="1" step="1">
+			<button id="more" title="More servings">+</button>
+			<span class="factor" id="factor"></span>
+		</div>
+	</header>
+
+	<h2>Ingredients</h2>
+	<ul class="ingredients" id="ingredients"></ul>
+
+	<h2>Steps <span class="progress" id="progress"></span></h2>
+	<ol class="steps" id="steps"></ol>
+
+	<p class="notes" id="notes"></p>
+</main>
+
+<script>
+	const DEMO = {
+		title: 'Fluffy pancakes',
+		servings: 4,
+		ingredients: [
+			'1 1/2 cups flour', '3 1/2 tsp baking powder', '1 tbsp sugar', '1/4 tsp salt',
+			'1 1/4 cups milk', '1 egg', '3 tbsp melted butter', 'butter for the pan',
+		],
+		steps: [
+			'Whisk flour, baking powder, sugar and salt in a large bowl.',
+			'Make a well in the centre, pour in the milk, egg and melted butter.',
+			'Mix until just combined; a few lumps are fine.',
+			'Heat a buttered pan over medium heat.',
+			'Pour 1/4 cup of batter per pancake, flip when bubbles form, cook until golden.',
+		],
+		notes: 'Rest the batter for 5 minutes for thicker pancakes.',
+	};
+
+	const raw = window.widgetArgs ?? {};
+	const args = raw.ingredients || raw.steps ? raw : DEMO;
+
+	/** An array as is, or a string split on newlines (or semicolons when it has none). */
+	function list(value) {
+		if (Array.isArray(value)) return value;
+		if (typeof value !== 'string') return [];
+		return value.split(value.includes('\n') ? '\n' : ';').map(s => s.trim()).filter(Boolean);
+	}
+
+	// ── Quantities ──
+
+	const VULGAR = { '½': 1/2, '⅓': 1/3, '⅔': 2/3, '¼': 1/4, '¾': 3/4, '⅛': 1/8, '⅜': 3/8, '⅝': 5/8, '⅞': 7/8 };
+	const V = Object.keys(VULGAR).join('');
+	// "1 1/2", "1/2", "1.5", "1,5", "1½", "1 ½", "½"; most specific first
+	const NUM = `\\d+\\s+\\d+/\\d+|\\d+/\\d+|\\d+(?:[.,]\\d+)?(?:\\s?[${V}])?|[${V}]`;
+	const LEADING = new RegExp(`^(${NUM})(?:\\s*(?:-|–|to)\\s*(${NUM}))?\\s*(.*)$`, 's');
+
+	function parseNumber(text) {
+		return text.trim().split(new RegExp(`\\s+|(?=[${V}])`)).filter(Boolean).reduce((sum, part) => {
+			if (part in VULGAR) return sum + VULGAR[part];
+			const [a, b] = part.split('/');
+			return sum + (b ? Number(a) / Number(b) : Number(a.replace(',', '.')));
+		}, 0);
+	}
+
+	const NICE = [[1/8, '⅛'], [1/4, '¼'], [1/3, '⅓'], [3/8, '⅜'], [1/2, '½'], [5/8, '⅝'], [2/3, '⅔'], [3/4, '¾'], [7/8, '⅞']];
+
+	function formatNumber(n) {
+		if (n >= 20) return String(Math.round(n));
+		const whole = Math.floor(n);
+		const rest = n - whole;
+		if (rest < 0.04) return String(whole);
+		if (rest > 0.96) return String(whole + 1);
+		const nice = NICE.find(([v]) => Math.abs(rest - v) < 0.02);
+		if (nice) return (whole || '') + nice[1];
+		return String(Math.round(n * 10) / 10);
+	}
+
+	/** { qty: [low, high?] | null, qtyText, rest } */
+	function parseIngredient(item) {
+		if (item && typeof item === 'object') {
+			const qty = Number(item.qty ?? item.quantity ?? item.amount);
+			const rest = [item.unit, item.name ?? item.item].filter(Boolean).join(' ');
+			return Number.isFinite(qty) && qty > 0
+				? { qty: [qty], qtyText: formatNumber(qty), rest }
+				: { qty: null, rest };
+		}
+		const text = String(item).trim();
+		const m = text.match(LEADING);
+		if (!m) return { qty: null, rest: text };
+		const qty = [parseNumber(m[1]), ...(m[2] ? [parseNumber(m[2])] : [])];
+		if (!qty.every(n => Number.isFinite(n) && n > 0)) return { qty: null, rest: text };
+		const qtyText = m[2] ? `${m[1].trim()}–${m[2].trim()}` : m[1].trim();
+		return { qty, qtyText, rest: m[3] };
+	}
+
+	// ── State and rendering ──
+
+	const baseServings = Number(args.servings) > 0 ? Number(args.servings) : 1;
+	const ingredients = list(args.ingredients).map(parseIngredient);
+	const steps = list(args.steps).map(String);
+	let servings = baseServings;
+	const done = new Set();
+
+	const $ = id => document.getElementById(id);
+	const el = (tag, className, text) => {
+		const node = document.createElement(tag);
+		if (className) node.className = className;
+		if (text !== undefined) node.textContent = text;
+		return node;
+	};
+
+	$('title').textContent = typeof args.title === 'string' && args.title.trim() ? args.title : 'Recipe';
+	if (typeof args.notes === 'string' && args.notes.trim()) $('notes').textContent = args.notes;
+	else $('notes').remove();
+
+	function renderIngredients() {
+		const factor = servings / baseServings;
+		$('factor').textContent = factor === 1 ? '' : `×${formatNumber(factor)}`;
+		$('ingredients').replaceChildren(...ingredients.map(({ qty, qtyText, rest }) => {
+			const li = el('li');
+			if (qty) {
+				const text = factor === 1 ? qtyText : qty.map(n => formatNumber(n * factor)).join('–');
+				li.append(el('span', 'qty', text), ' ');
+			}
+			li.append(rest);
+			return li;
+		}));
+	}
+
+	function renderSteps() {
+		$('steps').replaceChildren(...steps.map((step, i) => {
+			const li = el('li');
+			const num = el('span', 'num', String(i + 1));
+			li.append(num, el('span', 'text', step));
+			li.setAttribute('role', 'checkbox');
+			li.setAttribute('aria-checked', 'false');
+			li.tabIndex = 0;
+			const toggle = () => {
+				done.has(i) ? done.delete(i) : done.add(i);
+				li.classList.toggle('done', done.has(i));
+				li.setAttribute('aria-checked', String(done.has(i)));
+				num.textContent = done.has(i) ? '✓' : String(i + 1);
+				renderProgress();
+			};
+			li.addEventListener('click', () => { if (!getSelection()?.toString()) toggle(); });
+			li.addEventListener('keydown', e => {
+				if (e.key !== ' ' && e.key !== 'Enter') return;
+				e.preventDefault();
+				toggle();
+			});
+			return li;
+		}));
+		renderProgress();
+	}
+
+	function renderProgress() {
+		const progress = $('progress');
+		progress.className = done.size === steps.length && steps.length ? 'progress allDone' : 'progress';
+		progress.textContent = !steps.length ? '' : done.size === steps.length ? 'all done' : `${done.size}/${steps.length}`;
+	}
+
+	function setServings(n) {
+		servings = Math.max(1, Math.round(n) || 1);
+		$('servings').value = servings;
+		renderIngredients();
+	}
+
+	$('less').addEventListener('click', () => setServings(servings - 1));
+	$('more').addEventListener('click', () => setServings(servings + 1));
+	$('servings').addEventListener('input', e => {
+		const n = Number(e.target.value);
+		if (n >= 1) { servings = Math.round(n); renderIngredients(); }
+	});
+	$('servings').addEventListener('change', e => setServings(Number(e.target.value)));
+
+	setServings(baseServings);
+	renderSteps();
+</script>
+</body>
+</html>
