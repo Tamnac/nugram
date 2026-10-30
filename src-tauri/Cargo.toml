@@ -1,0 +1,38 @@
+[package]
+name = "nugram"
+version = "0.3.0"
+edition = "2021"
+
+[lib]
+name = "nugram_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[profile.release]
+lto = false
+codegen-units = 16
+
+# Fast compile-time check (no bundling): cd src-tauri && cargo build --profile fast
+[profile.fast]
+inherits = "release"
+opt-level = 1
+codegen-units = 256
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["devtools"] }
+tauri-plugin-fs = "2"
+tauri-plugin-dialog = "2"
+# unsafe-headers: lets us strip the plugin's Origin header (see httpFetch in platform.ts)
+tauri-plugin-http = { version = "2", features = ["unsafe-headers"] }
+tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+# Same version the sql plugin pulls in — src/sql.rs borrows its pool
+sqlx = { version = "0.8", default-features = false, features = ["sqlite", "runtime-tokio"] }
+tauri-plugin-window-state = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# ring over aws-lc-rs: builds on Windows without cmake/nasm
+russh = { version = "0.62", default-features = false, features = ["ring", "rsa", "flate2"] }
+russh-sftp = "2"
+tokio = { version = "1", features = ["sync", "time", "io-util"] }
